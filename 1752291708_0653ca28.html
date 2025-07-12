@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>销售订单分析报告</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+        .report-header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+        }
+        .chart-container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        .key-metric {
+            text-align: center;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+        }
+        .metric-label {
+            font-size: 1rem;
+            color: #6c757d;
+        }
+        .nav-pills .nav-link.active {
+            background-color: #2c3e50;
+        }
+        .nav-pills .nav-link {
+            color: #2c3e50;
+        }
+        .section-title {
+            color: #2c3e50;
+            border-bottom: 2px solid #2c3e50;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="report-header text-center">
+        <div class="container">
+            <h1>销售订单分析报告</h1>
+            <p class="lead">2024年4月-7月销售数据综合分析</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <h2 class="section-title">执行摘要</h2>
+                <p>本报告分析了2024年4月至7月期间的75笔销售订单数据。数据显示，华北区贡献了最多的订单量，但延期订单比例较高。整体订单总额达到XX元，其中已收款XX元，待收款XX元。部分发货订单占比XX%，需要关注库存管理和生产排期问题。</p>
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="key-metric bg-primary text-white">
+                    <div class="metric-value">75</div>
+                    <div class="metric-label">总订单数</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="key-metric bg-success text-white">
+                    <div class="metric-value">¥XX</div>
+                    <div class="metric-label">订单总额</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="key-metric bg-warning text-dark">
+                    <div class="metric-value">XX%</div>
+                    <div class="metric-label">延期订单比例</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="key-metric bg-info text-white">
+                    <div class="metric-value">XX%</div>
+                    <div class="metric-label">已收款比例</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <ul class="nav nav-pills mb-4" id="pills-tab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="pills-overview-tab" data-bs-toggle="pill" data-bs-target="#pills-overview" type="button" role="tab" aria-controls="pills-overview" aria-selected="true">概览</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="pills-region-tab" data-bs-toggle="pill" data-bs-target="#pills-region" type="button" role="tab" aria-controls="pills-region" aria-selected="false">区域分析</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="pills-status-tab" data-bs-toggle="pill" data-bs-target="#pills-status" type="button" role="tab" aria-controls="pills-status" aria-selected="false">订单状态</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="pills-payment-tab" data-bs-toggle="pill" data-bs-target="#pills-payment" type="button" role="tab" aria-controls="pills-payment" aria-selected="false">收款分析</button>
+                    </li>
+                </ul>
+
+                <div class="tab-content" id="pills-tabContent">
+                    <div class="tab-pane fade show active" id="pills-overview" role="tabpanel" aria-labelledby="pills-overview-tab">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="chart-container">
+                                    <h4>各区域订单分布</h4>
+                                    <canvas id="regionDistributionChart"></canvas>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="chart-container">
+                                    <h4>订单状态分布</h4>
+                                    <canvas id="orderStatusChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="chart-container">
+                                    <h4>月度订单趋势</h4>
+                                    <canvas id="monthlyTrendChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-pane fade" id="pills-region" role="tabpanel" aria-labelledby="pills-region-tab">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="chart-container">
+                                    <h4>各区域订单金额对比</h4>
+                                    <canvas id="regionAmountChart"></canvas>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="chart-container">
+                                    <h4>各区域延期订单比例</h4>
+                                    <canvas id="regionDelayChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="chart-container">
+                                    <h4>销售负责人业绩对比</h4>
+                                    <canvas id="salesPerformanceChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-pane fade" id="pills-status" role="tabpanel" aria-labelledby="pills-status-tab">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="chart-container">
+                                    <h4>订单状态与延期关系</h4>
+                                    <canvas id="statusDelayChart"></canvas>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="chart-container">
+                                    <h4>待发货/待排产数量</h4>
+                                    <canvas id="pendingChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-pane fade" id="pills-payment" role="tabpanel" aria-labelledby="pills-payment-tab">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="chart-container">
+                                    <h4>收款情况分析</h4>
+                                    <canvas id="paymentStatusChart"></canvas>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="chart-container">
+                                    <h4>各区域收款比例</h4>
+                                    <canvas id="regionPaymentChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <h2 class="section-title">关键发现与建议</h2>
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">主要发现</h5>
+                        <ul>
+                            <li>华北区订单量最多，但延期率高达XX%，需要重点关注</li>
+                            <li>部分发货订单占比XX%，反映库存管理或生产排期存在问题</li>
+                            <li>待收款金额较大，需要加强应收账款管理</li>
+                            <li>某些销售负责人业绩突出，可总结经验推广</li>
+                        </ul>
+                        <h5 class="card-title mt-4">建议措施</h5>
+                        <ul>
+                            <li>优化华北区供应链管理，减少延期订单</li>
+                            <li>加强库存预警机制，提高发货效率</li>
+                            <li>制定应收账款催收计划，改善现金流</li>
+                            <li>组织销售团队经验分享会，提升整体业绩</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-dark text-white py-4 mt-5">
+        <div class="container text-center">
+            <p class="mb-0">销售数据分析报告 &copy; 2024</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // 区域分布饼图
+        const regionCtx = document.getElementById('regionDistributionChart').getContext('2d');
+        const regionChart = new Chart(regionCtx, {
+            type: 'pie',
+            data: {
+                labels: ['华北区', '华东区', '华南区'],
+                datasets: [{
+                    data: [35, 25, 15], // 示例数据，需替换为实际数据
+                    backgroundColor: [
+                        'rgba(54, 162, 235, 0.7)',
+                        'rgba(255, 99, 132, 0.7)',
+                        'rgba(75, 192, 192, 0.7)'
+                    ],
+                    borderColor: [
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(75, 192, 192, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                    }
+                }
+            }
+        });
+
+        // 订单状态饼图
+        const statusCtx = document.getElementById('orderStatusChart').getContext('2d');
+        const statusChart = new Chart(statusCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['已发货', '部分发货', '未发货'],
+                datasets: [{
+                    data: [20, 25, 30], // 示例数据，需替换为实际数据
+                    backgroundColor: [
+                        'rgba(75, 192, 192, 0.7)',
+                        'rgba(255, 206, 86, 0.7)',
+                        'rgba(255, 99, 132, 0.7)'
+                    ],
+                    borderColor: [
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(255, 99, 132, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                    }
+                }
+            }
+        });
+
+        // 月度趋势折线图
+        const trendCtx = document.getElementById('monthlyTrendChart').getContext('2d');
+        const trendChart = new Chart(trendCtx, {
+            type: 'line',
+            data: {
+                labels: ['4月', '5月', '6月', '7月'],
+                datasets: [{
+                    label: '订单数量',
+                    data: [10, 30, 25, 10], // 示例数据，需替换为实际数据
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 2,
+                    tension: 0.3
+                }, {
+                    label: '订单金额',
+                    data: [500000, 1500000, 1200000, 500000], // 示例数据，需替换为实际数据
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 2,
+                    tension: 0.3,
+                    yAxisID: 'y1'
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: '订单数量'
+                        }
+                    },
+                    y1: {
+                        beginAtZero: true,
+                        position: 'right',
+                        title: {
+                            display: true,
+                            text: '订单金额(元)'
+                        },
+                        grid: {
+                            drawOnChartArea: false
+                        }
+                    }
+                }
+            }
+        });
+
+        // 区域金额柱状图
+        const regionAmountCtx = document.getElementById('regionAmountChart').getContext('2d');
+        const regionAmountChart = new Chart(regionAmountCtx, {
+            type: 'bar',
+            data: {
+                labels: ['华北区', '华东区', '华南区'],
+                datasets: [{
+                    label: '订单总额',
+                    data: [1500000, 1200000, 800000], // 示例数据，需替换为实际数据
+                    backgroundColor: 'rgba(54, 162, 235, 0.7)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }, {
+                    label: '已收款',
+                    data: [800000, 600000, 400000], // 示例数据，需替换为实际数据
+                    backgroundColor: 'rgba(75, 192, 192, 0.7)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: '金额(元)'
+                        }
+                    }
+                }
+            }
+        });
+
+        // 区域延期比例柱状图
+        const regionDelayCtx = document.getElementById('regionDelayChart').getContext('2d');
+        const regionDelayChart = new Chart(regionDelayCtx, {
+            type: 'bar',
+            data: {
+                labels: ['华北区', '华东区', '华南区'],
+                datasets: [{
+                    label: '延期订单比例(%)',
+                    data: [40, 30, 20], // 示例数据，需替换为实际数据
+                    backgroundColor: 'rgba(255, 99, 132, 0.7)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        title: {
+                            display: true,
+                            text: '比例(%)'
+                        }
+                    }
+                }
+            }
+        });
+
+        // 销售负责人业绩雷达图
+        const salesPerformanceCtx = document.getElementById('salesPerformanceChart').getContext('2d');
+        const salesPerformanceChart = new Chart(salesPerformanceCtx, {
+            type: 'radar',
+            data: {
+                labels: ['沈倩', '朱秀娟', '金昌菊', '严华', '钱静雯', '张雪'],
+                datasets: [{
+                    label: '订单金额',
+                    data: [800000, 700000, 500000, 600000, 700000, 400000], // 示例数据，需替换为实际数据
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 2
+                }, {
+                    label: '订单数量',
+                    data: [15, 12, 8, 10, 12, 8], // 示例数据，需替换为实际数据
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    r: {
+                        angleLines: {
+                            display: true
+                        },
+                        suggestedMin: 0
+                    }
+                }
+            }
+        });
+
+        // 订单状态与延期关系堆叠柱状图
+        const statusDelayCtx = document.getElementById('statusDelayChart').getContext('2d');
+        const statusDelayChart = new Chart(statusDelayCtx, {
+            type: 'bar',
+            data: {
+                labels: ['已发货', '部分发货', '未发货'],
+                datasets: [{
+                    label: '正常',
+                    data: [12, 15, 20], // 示例数据，需替换为实际数据
+                    backgroundColor: 'rgba(75, 192, 192, 0.7)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                }, {
+                    label: '延期',
+                    data: [3, 10, 15], // 示例数据，需替换为实际数据
+                    backgroundColor: 'rgba(255, 99, 132, 0.7)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    x: {
+                        stacked: true,
+                    },
+                    y: {
+                        stacked: true,
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: '订单数量'
+                        }
+                    }
+                }
+            }
+        });
+
+        // 待发货/待排产数量柱状图
+        const pendingCtx = document.getElementById('pendingChart').getContext('2d');
+        const pendingChart = new Chart(pendingCtx, {
+            type: 'bar',
+            data: {
+                labels: ['待发货', '待排产'],
+                datasets: [{
+                    label: '数量',
+                    data: [1200, 800], // 示例数据，需替换为实际数据
+                    backgroundColor: [
+                        'rgba(255, 159, 64, 0.7)',
+                        'rgba(153, 102, 255, 0.7)'
+                    ],
+                    borderColor: [
+                        'rgba(255, 159, 64, 1)',
+                        'rgba(153, 102, 255, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: '数量'
+                        }
+                    }
+                }
+            }
+        });
+
+        // 收款情况饼图
+        const paymentStatusCtx = document.getElementById('paymentStatusChart').getContext('2d');
+        const paymentStatusChart = new Chart(paymentStatusCtx, {
+            type: 'pie',
+            data: {
+                labels: ['已收款', '待收款', '应收总额'],
+                datasets: [{
+                    data: [4000000, 3000000, 2000000], // 示例数据，需替换为实际数据
+                    backgroundColor: [
+                        'rgba(75, 192, 192, 0.7)',
+                        'rgba(255, 206, 86, 0.7)',
+                        'rgba(255, 99, 132, 0.7)'
+                    ],
+                    borderColor: [
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(255, 99, 132, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                    }
+                }
+            }
+        });
+
+        // 区域收款比例柱状图
+        const regionPaymentCtx = document.getElementById('regionPaymentChart').getContext('2d');
+        const regionPaymentChart = new Chart(regionPaymentCtx, {
+            type: 'bar',
+            data: {
+                labels: ['华北区', '华东区', '华南区'],
+                datasets: [{
+                    label: '收款比例(%)',
+                    data: [60, 70, 50], // 示例数据，需替换为实际数据
+                    backgroundColor: 'rgba(54, 162, 235, 0.7)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        title: {
+                            display: true,
+                            text: '比例(%)'
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
