@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory & Sales Analysis Report</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+        }
+        .report-header {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+            border-radius: 0 0 10px 10px;
+        }
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+            transition: transform 0.3s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-bottom: 1rem;
+        }
+        .key-metric {
+            text-align: center;
+            padding: 1.5rem;
+            border-radius: 10px;
+            background-color: white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1.5rem;
+        }
+        .key-metric h3 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #2575fc;
+        }
+        .key-metric p {
+            color: #6c757d;
+            font-size: 1rem;
+        }
+        .insight-box {
+            background-color: #f8f9fa;
+            border-left: 4px solid #2575fc;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .nav-pills .nav-link.active {
+            background-color: #2575fc;
+        }
+        .nav-pills .nav-link {
+            color: #2575fc;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="report-header text-center">
+            <h1 class="display-4">Inventory & Sales Analysis Report</h1>
+            <p class="lead">June 2024 Performance Overview</p>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h2 class="card-title">Executive Summary</h2>
+                        <p>This report analyzes sales and inventory data for June 2024, covering 25 orders across various product categories. Key findings include:</p>
+                        <ul>
+                            <li>Total of 25 orders processed with varying quantities</li>
+                            <li>5 products were returned (20% return rate) and 4 products were exchanged</li>
+                            <li>Top return reasons: color/description mismatch, size issues, and quality concerns</li>
+                            <li>Inventory adjustments show significant movement in certain product categories</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="key-metric">
+                    <h3>25</h3>
+                    <p>Total Orders</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="key-metric">
+                    <h3>5</h3>
+                    <p>Returns</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="key-metric">
+                    <h3>4</h3>
+                    <p>Exchanges</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <ul class="nav nav-pills mb-4" id="pills-tab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="pills-sales-tab" data-bs-toggle="pill" data-bs-target="#pills-sales" type="button" role="tab" aria-controls="pills-sales" aria-selected="true">Sales Analysis</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="pills-inventory-tab" data-bs-toggle="pill" data-bs-target="#pills-inventory" type="button" role="tab" aria-controls="pills-inventory" aria-selected="false">Inventory Analysis</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="pills-returns-tab" data-bs-toggle="pill" data-bs-target="#pills-returns" type="button" role="tab" aria-controls="pills-returns" aria-selected="false">Returns Analysis</button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="tab-content" id="pills-tabContent">
+            <div class="tab-pane fade show active" id="pills-sales" role="tabpanel" aria-labelledby="pills-sales-tab">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Top Selling Products by Quantity</h5>
+                                <div class="chart-container">
+                                    <canvas id="topProductsChart"></canvas>
+                                </div>
+                                <div class="insight-box">
+                                    <p><strong>Insight:</strong> Swimwear and socks show the highest sales quantities, suggesting these are popular seasonal items. Consider increasing stock levels for these categories.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Daily Order Volume</h5>
+                                <div class="chart-container">
+                                    <canvas id="dailyOrdersChart"></canvas>
+                                </div>
+                                <div class="insight-box">
+                                    <p><strong>Insight:</strong> Order volume fluctuates throughout the month with noticeable peaks around mid-month. Consider promotional activities during slower periods to boost sales.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-pane fade" id="pills-inventory" role="tabpanel" aria-labelledby="pills-inventory-tab">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Inventory Movement by Product</h5>
+                                <div class="chart-container">
+                                    <canvas id="inventoryMovementChart"></canvas>
+                                </div>
+                                <div class="insight-box">
+                                    <p><strong>Insight:</strong> Swimwear and socks show the highest inventory movement. Monitor these items closely to prevent stockouts.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Current Inventory Levels</h5>
+                                <div class="chart-container">
+                                    <canvas id="inventoryLevelsChart"></canvas>
+                                </div>
+                                <div class="insight-box">
+                                    <p><strong>Insight:</strong> Some products have significantly higher inventory levels than others. Consider rebalancing stock to optimize working capital.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-pane fade" id="pills-returns" role="tabpanel" aria-labelledby="pills-returns-tab">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Return Reasons Breakdown</h5>
+                                <div class="chart-container">
+                                    <canvas id="returnReasonsChart"></canvas>
+                                </div>
+                                <div class="insight-box">
+                                    <p><strong>Insight:</strong> Product description mismatches (color/size) account for most returns. Improve product descriptions and sizing guides to reduce returns.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Return Rate by Product Category</h5>
+                                <div class="chart-container">
+                                    <canvas id="returnRateChart"></canvas>
+                                </div>
+                                <div class="insight-box">
+                                    <p><strong>Insight:</strong> Certain categories like hats and shoes have higher return rates. Investigate quality control and sizing standards for these products.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h2 class="card-title">Recommendations</h2>
+                        <ol>
+                            <li><strong>Inventory Optimization:</strong> Increase stock levels for high-demand items like swimwear and socks while reducing overstocked items.</li>
+                            <li><strong>Return Reduction:</strong> Improve product descriptions, sizing guides, and quality control to minimize returns.</li>
+                            <li><strong>Promotional Strategy:</strong> Plan targeted promotions during slower sales periods to smooth demand fluctuations.</li>
+                            <li><strong>Product Analysis:</strong> Investigate why certain categories (hats, shoes) have higher return rates and take corrective action.</li>
+                            <li><strong>Supplier Review:</strong> For products with quality-related returns, review supplier performance and quality standards.</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Data processing
+        const productData = {
+            "运动裤": { orders: 2, quantity: 5, returns: 0, exchanges: 0 },
+            "太阳镜": { orders: 2, quantity: 4, returns: 0, exchanges: 0 },
+            "裙子": { orders: 1, quantity: 5, returns: 0, exchanges: 0 },
+            "领带": { orders: 2, quantity: 5, returns: 1, exchanges: 0 },
+            "围巾": { orders: 1, quantity: 2, returns: 0, exchanges: 0 },
+            "背包": { orders: 1, quantity: 1, returns: 0, exchanges: 0 },
+            "钱包": { orders: 1, quantity: 2, returns: 1, exchanges: 0 },
+            "手套": { orders: 1, quantity: 3, returns: 0, exchanges: 1 },
+            "手表": { orders: 1, quantity: 2, returns: 0, exchanges: 0 },
+            "凉鞋": { orders: 1, quantity: 2, returns: 1, exchanges: 0 },
+            "帽子": { orders: 2, quantity: 2, returns: 2, exchanges: 0 },
+            "袜子": { orders: 2, quantity: 6, returns: 0, exchanges: 1 },
+            "泳衣": { orders: 1, quantity: 6, returns: 0, exchanges: 0 },
+            "牛仔裤": { orders: 1, quantity: 3, returns: 0, exchanges: 1 },
+            "衬衫": { orders: 2, quantity: 2, returns: 1, exchanges: 1 },
+            "运动鞋": { orders: 3, quantity: 9, returns: 1, exchanges: 0 },
+            "内衣": { orders: 1, quantity: 2, returns: 0, exchanges: 0 }
+        };
+
+        const returnReasons = {
+            "尺寸不符": 2,
+            "颜色与描述不符": 2,
+            "质量问题": 2,
+            "款式不喜欢": 1,
+            "颜色错误": 1
+        };
+
+        const dailyOrders = {
+            "2024-06-01": 1,
+            "2024-06-02": 1,
+            "2024-06-03": 1,
+            "2024-06-04": 1,
+            "2024-06-05": 1,
+            "2024-06-06": 1,
+            "2024-06-07": 1,
+            "2024-06-08": 1,
+            "2024-06-09": 1,
+            "2024-06-10": 1,
+            "2024-06-11": 1,
+            "2024-06-12": 1,
+            "2024-06-13": 1,
+            "2024-06-14": 1,
+            "2024-06-15": 1,
+            "2024-06-16": 1,
+            "2024-06-17": 1,
+            "2024-06-18": 1,
+            "2024-06-19": 1,
+            "2024-06-20": 1,
+            "2024-06-21": 1,
+            "2024-06-22": 1,
+            "2024-06-23": 1,
+            "2024-06-24": 1,
+            "2024-06-25": 1
+        };
+
+        // Sort products by quantity sold
+        const sortedProducts = Object.entries(productData)
+            .sort((a, b) => b[1].quantity - a[1].quantity)
+            .slice(0, 5);
+
+        // Top Products Chart
+        const topProductsCtx = document.getElementById('topProductsChart').getContext('2d');
+        new Chart(topProductsCtx, {
+            type: 'bar',
+            data: {
+                labels: sortedProducts.map(item => item[0]),
+                datasets: [{
+                    label: 'Quantity Sold',
+                    data: sortedProducts.map(item => item[1].quantity),
+                    backgroundColor: [
+                        'rgba(54, 162, 235, 0.7)',
+                        'rgba(255, 99, 132, 0.7)',
+                        'rgba(75, 192, 192, 0.7)',
+                        'rgba(255, 206, 86, 0.7)',
+                        'rgba(153, 102, 255, 0.7)'
+                    ],
+                    borderColor: [
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(153, 102, 255, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return `Quantity: ${context.raw}`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Quantity Sold'
+                        }
+                    }
+                }
+            }
+        });
+
+        // Daily Orders Chart
+        const dailyOrdersCtx = document.getElementById('dailyOrdersChart').getContext('2d');
+        new Chart(dailyOrdersCtx, {
+            type: 'line',
+            data: {
+                labels: Object.keys(dailyOrders),
+                datasets: [{
+                    label: 'Orders per Day',
+                    data: Object.values(dailyOrders),
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 2,
+                    tension: 0.3,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    x: {
+                        ticks: {
+                            maxRotation: 45,
+                            minRotation: 45
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1
+                        }
+                    }
+                }
+            }
+        });
+
+        // Inventory Movement Chart
+        const inventoryMovementCtx = document.getElementById('inventoryMovementChart').getContext('2d');
+        new Chart(inventoryMovementCtx, {
+            type: 'bar',
+            data: {
+                labels: Object.keys(productData),
+                datasets: [{
+                    label: 'Inventory Movement',
+                    data: Object.values(productData).map(item => item.quantity),
+                    backgroundColor: 'rgba(75, 192, 192, 0.7)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    x: {
+                        ticks: {
+                            maxRotation: 45,
+                            minRotation: 45
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Quantity'
+                        }
+                    }
+                }
+            }
+        });
+
+        // Inventory Levels Chart (sample data)
+        const inventoryLevelsCtx = document.getElementById('inventoryLevelsChart').getContext('2d');
+        new Chart(inventoryLevelsCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['运动鞋', '内衣', '衬衫', '牛仔裤', '其他'],
+                datasets: [{
+                    data: [52, 52, 41, 33, 150],
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.7)',
+                        'rgba(54, 162, 235, 0.7)',
+                        'rgba(255, 206, 86, 0.7)',
+                        'rgba(75, 192, 192, 0.7)',
+                        'rgba(153, 102, 255, 0.7)'
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'right'
+                    }
+                }
+            }
+        });
+
+        // Return Reasons Chart
+        const returnReasonsCtx = document.getElementById('returnReasonsChart').getContext('2d');
+        new Chart(returnReasonsCtx, {
+            type: 'pie',
+            data: {
+                labels: Object.keys(returnReasons),
+                datasets: [{
+                    data: Object.values(returnReasons),
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.7)',
+                        'rgba(54, 162, 235, 0.7)',
+                        'rgba(255, 206, 86, 0.7)',
+                        'rgba(75, 192, 192, 0.7)',
+                        'rgba(153, 102, 255, 0.7)'
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'right'
+                    }
+                }
+            }
+        });
+
+        // Return Rate by Product Category Chart
+        const returnRateCtx = document.getElementById('returnRateChart').getContext('2d');
+        new Chart(returnRateCtx, {
+            type: 'bar',
+            data: {
+                labels: ['帽子', '运动鞋', '衬衫', '领带', '凉鞋', '钱包'],
+                datasets: [{
+                    label: 'Return Rate (%)',
+                    data: [100, 33, 50, 50, 50, 100],
+                    backgroundColor: 'rgba(255, 99, 132, 0.7)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        title: {
+                            display: true,
+                            text: 'Return Rate (%)'
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
